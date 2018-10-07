@@ -26,7 +26,7 @@ ModulePhysics::ModulePhysics(Application* app, bool start_enabled) : Module(app,
 // Destructor
 ModulePhysics::~ModulePhysics()
 {
-	delete world;
+	/*delete world;*/
 }
 
 bool ModulePhysics::Start()
@@ -37,21 +37,11 @@ bool ModulePhysics::Start()
 	// - You need to send it a default gravity
 	// - You need init the world in the constructor
 	// - Remember to destroy the world after using it
-
 	b2CircleShape shape;
-	b2Vec2 gravity(0.0f, -10.0f);
+	b2Vec2 gravity(0.0f, 10.0f);
 	world = new b2World(gravity);
 
-
 	// TODO 4: Create a a big static circle as "ground"
-
-	/*b2BodyDef groundBodyDef;
-	groundBodyDef.position.Set(PIXELS_TO_METERS(100), PIXELS_TO_METERS(100));
-
-	b2Body* groundBody = world->CreateBody(&groundBodyDef);	
-	radius = 70;
-
-	shape.m_radius = PIXELS_TO_METERS((float)radius);*/
 
 	radius = 300;
 
@@ -67,6 +57,7 @@ bool ModulePhysics::Start()
 	body->CreateFixture(&fixture);
 
 
+
 	return true;
 }
 
@@ -78,7 +69,8 @@ update_status ModulePhysics::PreUpdate()
 	float32 timeStep = 1.0f / 60.0f;
 
 	int32 velocityIterations = 8;
-	int32 positionIterations = 3;	world->Step(timeStep, velocityIterations, positionIterations);
+	int32 positionIterations = 3;
+	world->Step(timeStep, velocityIterations, positionIterations);
 
 	return UPDATE_CONTINUE;
 }
@@ -91,9 +83,23 @@ update_status ModulePhysics::PostUpdate()
 
 	if (App->input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN)
 	{
-		App->renderer->DrawCircle(METERS_TO_PIXELS(App->input->GetMouseX()), METERS_TO_PIXELS(App->input->GetMouseX()), METERS_TO_PIXELS(150), 255, 255, 255);
+
+		b2CircleShape shape;
+
+		radius = 50;
+
+		b2BodyDef body_def;
+		body_def.type = b2_dynamicBody; // or b2_dynamicBody
+		body_def.position.Set(PIXELS_TO_METERS(App->input->GetMouseX()), PIXELS_TO_METERS(App->input->GetMouseY()));
+		b2Body* body = world->CreateBody(&body_def);
+
+		shape.m_radius = PIXELS_TO_METERS(radius);
+
+		b2FixtureDef fixture;
+		fixture.shape = &shape;
+		body->CreateFixture(&fixture);
+
 	}
-		
 
 	if(App->input->GetKey(SDL_SCANCODE_F1) == KEY_DOWN)
 		debug = !debug;
@@ -133,6 +139,8 @@ bool ModulePhysics::CleanUp()
 	LOG("Destroying physics world");
 
 	// Delete the whole physics world!
+
+	delete world;
 
 	return true;
 }

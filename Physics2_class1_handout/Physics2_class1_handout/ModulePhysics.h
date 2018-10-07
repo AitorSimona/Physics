@@ -2,11 +2,9 @@
 #include "Module.h"
 #include "Globals.h"
 
-
 class b2World;
 #define PIXELS_TO_METERS(pixels) {float(pixels/conversionfactor)}
 #define METERS_TO_PIXELS(meters) {(int)(meters*conversionfactor)}
-
 
 class ModulePhysics : public Module
 {
@@ -19,13 +17,10 @@ public:
 	update_status PostUpdate();
 	bool CleanUp();
 
-
-
 private:
 
-	b2World *world;
 	bool debug;
+	b2World *world;
 	int radius;
 	int conversionfactor = 10;
-
 };
