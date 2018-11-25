@@ -79,6 +79,40 @@ update_status ModulePhysics3D::PreUpdate(float dt)
 	// - If we have contacts, get both PhysBody3D from userpointers
 	// - If iterate all contact listeners and call them
 
+	int numManifolds = world->getDispatcher()->getNumManifolds();
+	for (int i = 0; i < numManifolds; i++)
+	{
+		btPersistentManifold* contactManifold = world->getDispatcher()->getManifoldByIndexInternal(i);
+		btCollisionObject* objA = (btCollisionObject*)(contactManifold->getBody0());
+		btCollisionObject* objB = (btCollisionObject*)(contactManifold->getBody1());
+
+		int numContacts = contactManifold->getNumContacts();
+		if (numContacts > 0)
+		{
+			PhysBody3D* pbodyA = (PhysBody3D*)objA->getUserPointer();
+			PhysBody3D* pbodyB = (PhysBody3D*)objB->getUserPointer();
+
+			if (pbodyA && pbodyB)
+			{
+				p2List_item <Module*> * item = pbodyA->collision_listeners.getFirst();
+
+				while (item)
+				{
+					item->data->OnCollision(pbodyA, pbodyB);
+					item = item->next;
+				}
+
+				item = pbodyB->collision_listeners.getFirst();
+
+				while (item)
+				{
+					item->data->OnCollision(pbodyB, pbodyA);
+					item = item->next;
+				}
+			}
+
+		}
+	}
 	return UPDATE_CONTINUE;
 }
 
@@ -96,7 +130,8 @@ update_status ModulePhysics3D::Update(float dt)
 		{
 			Sphere s(1);
 			s.SetPos(App->camera->Position.x, App->camera->Position.y, App->camera->Position.z);
-			AddBody(s);
+			
+			AddBody(s,1.0,true);
 		}
 	}
 
@@ -151,7 +186,7 @@ bool ModulePhysics3D::CleanUp()
 }
 
 // ---------------------------------------------------------
-PhysBody3D* ModulePhysics3D::AddBody(const Sphere& sphere, float mass)
+PhysBody3D* ModulePhysics3D::AddBody(const Sphere& sphere, float mass, bool apply_impulse)
 {
 	btCollisionShape* colShape = new btSphereShape(sphere.radius);
 	// TODO 1: Store all collision shapes
@@ -169,7 +204,17 @@ PhysBody3D* ModulePhysics3D::AddBody(const Sphere& sphere, float mass)
 	btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, myMotionState, colShape, localInertia);
 
 	btRigidBody* body = new btRigidBody(rbInfo);
-	// TODO 1: Store all bodies
+
+	if (apply_impulse)
+	{
+		int force = 10;
+		btVector3 impulse(-(App->camera->Z.x * force), -(App->camera->Z.y * force), -(App->camera->Z.z * force));
+		body->applyCentralImpulse(impulse);
+		//btVector3 ref(App->camera->Reference.x, App->camera->Reference.y, App->camera->Reference.z);
+		//body->applyImpulse(impulse,ref);
+	}
+
+	//TODO 1: Store all bodies
 
 	PhysBody3D* pbody = new PhysBody3D(body);
 

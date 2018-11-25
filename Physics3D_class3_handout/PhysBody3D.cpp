@@ -6,12 +6,16 @@
 // get/setOpenGLMatrix methods
 
 // ---------------------------------------------------------
-PhysBody3D::PhysBody3D(btRigidBody* body)
-{}
+PhysBody3D::PhysBody3D(btRigidBody* body) : body(body)
+{
+	body->setUserPointer(this);
+}
 
 // ---------------------------------------------------------
 PhysBody3D::~PhysBody3D()
-{}
+{
+	delete body;
+}
 
 // ---------------------------------------------------------
 void PhysBody3D::GetTransform(float* matrix) const
@@ -28,4 +32,7 @@ void PhysBody3D::SetTransform(const float* matrix) const
 // ---------------------------------------------------------
 void PhysBody3D::SetPos(float x, float y, float z)
 {
+	btTransform t = body->getWorldTransform();
+	t.setOrigin(btVector3(x, y, z));
+	body->setWorldTransform(t);
 }

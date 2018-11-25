@@ -16,10 +16,10 @@ public:
 	update_status Update(float dt);
 	bool CleanUp();
 
-	void OnCollision(PhysBody3D* body1, PhysBody3D* body2);
+	void OnCollision(PhysBody3D* body1, PhysBody3D* body2) override;
 
 public:
 	PhysBody3D* b;
 	PhysBody3D* spherebody;
-	Sphere *aux;
+	Sphere *sphereshape;
 };

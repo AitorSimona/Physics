@@ -23,12 +23,14 @@ bool ModuleSceneIntro::Start()
 	// TODO 3: create a sphere in the world with a primitive
 	// and create a physics body for it. Remember to render it in Update()
 
-	aux = new Sphere(2);
-	aux->SetPos(5, 5, 5);
-	aux->color = Blue;
-	spherebody = App->physics->AddBody(*aux);
+	sphereshape = new Sphere(2);
+	sphereshape->SetPos(5, 5, 5);
+	sphereshape->color = Blue;
+	spherebody = App->physics->AddBody(*sphereshape);
 
 	// TODO 5: Add this module to the list of collision listeners
+
+	spherebody->collision_listeners.add(this);
 
 	return ret;
 }
@@ -52,8 +54,8 @@ update_status ModuleSceneIntro::Update(float dt)
 	// TODO 4: update the transform of the shape to meet the
 	// physics one
 
-	spherebody->GetTransform(&aux->transform);
-	aux->Render();
+	spherebody->GetTransform(&sphereshape->transform);
+	sphereshape->Render();
 
 
 
@@ -63,4 +65,8 @@ update_status ModuleSceneIntro::Update(float dt)
 // TODO 5: ... and define it for the ModuleScenario. Set the ball
 // in red if it happens using is color property
 
+void ModuleSceneIntro::OnCollision(PhysBody3D * body1, PhysBody3D * body2)
+{
+	sphereshape->color = Red;
+}
 

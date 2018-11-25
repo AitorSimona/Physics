@@ -25,7 +25,7 @@ public:
 	update_status PostUpdate(float dt);
 	bool CleanUp();
 
-	PhysBody3D* AddBody(const Sphere& sphere, float mass = 1.0f);
+	PhysBody3D* AddBody(const Sphere& sphere, float mass = 1.0f, bool apply_impulse=false);
 
 private:
 
