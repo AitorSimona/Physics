@@ -34,6 +34,8 @@ public:
 
 	// TODO 3: Code a method that adds a hinge constraint between two bodies
 
+	void AddConstraintHinge(PhysBody3D& bodyA, PhysBody3D& bodyB, const vec3& anchorA, const vec3& anchorB,const vec3& axisA, const vec3& axisB);
+
 private:
 
 	bool debug;
@@ -49,6 +51,7 @@ private:
 	p2List<PhysBody3D*> bodies;
 	p2List<btDefaultMotionState*> motions;
 	p2List<btPoint2PointConstraint*> constraints;
+	p2List<btHingeConstraint*> constraints_hinge;
 };
 
 class DebugDrawer : public btIDebugDraw

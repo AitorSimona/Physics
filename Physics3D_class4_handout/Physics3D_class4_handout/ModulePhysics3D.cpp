@@ -173,6 +173,15 @@ bool ModulePhysics3D::CleanUp()
 	}
 	constraints.clear();
 
+	p2List_item<btHingeConstraint*>* k_item = constraints_hinge.getFirst();
+
+	while (k_item)
+	{
+		delete k_item->data;
+		k_item = k_item->next;
+	}
+	constraints_hinge.clear();
+
 
 	p2List_item<PhysBody3D*>* b_item = bodies.getFirst();
 	while(b_item)
@@ -227,6 +236,23 @@ void ModulePhysics3D::AddConstraintP2P(PhysBody3D & bodyA, PhysBody3D & bodyB, c
 	world->addConstraint(constraint);
 	constraints.add(constraint);
 }
+
+void ModulePhysics3D::AddConstraintHinge(PhysBody3D & bodyA, PhysBody3D & bodyB, const vec3 & anchorA, const vec3 & anchorB, const vec3 & axisA, const vec3 & axisB)
+{
+	btVector3 pivotInA(anchorA.x, anchorA.y, anchorA.z);
+
+	btVector3 pivotInB(anchorB.x, anchorB.y, anchorB.z);
+
+	btVector3 axisAa(axisA.x, axisA.y, axisA.z);
+
+	btVector3 axisBb(axisB.x, axisB.y, axisB.z);
+
+	btHingeConstraint * constraint = new btHingeConstraint(*bodyA.body,*bodyB.body,pivotInA,pivotInB, axisAa, axisBb);
+
+	world->addConstraint(constraint);
+	constraints_hinge.add(constraint);
+}
+
 
 // ---------------------------------------------------------
 

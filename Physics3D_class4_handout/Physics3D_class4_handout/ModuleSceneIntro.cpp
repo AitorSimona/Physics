@@ -50,12 +50,27 @@ bool ModuleSceneIntro::Start()
 		pb_snake[i] = App->physics->AddBody(s_snake[i]);
 
 		App->physics->AddConstraintP2P(*pb_snake[i], *pb_snake[i - 1], anchor, -anchor);
-
-	/*	anchor = { 0,0, s_snake[i].radius };*/
 	}
 
 	// TODO 4: Chain few N spheres together to form a a bike's sphere
 	// Be sure to put the right axis
+
+	vec3 anchor2(0, 0, s_snake2[0].radius);
+	vec3 axis(0, 1, 0);
+
+	s_snake2[0].SetPos(0, 0, 0);
+
+	pb_snake2[0] = App->physics->AddBody(s_snake2[0]);
+
+
+	for (int i = 1; i < MAX_SNAKE; ++i)
+	{
+		s_snake2[i].SetPos(0, 0, i);
+
+		pb_snake2[i] = App->physics->AddBody(s_snake2[i]);
+
+		App->physics->AddConstraintHinge(*pb_snake2[i], *pb_snake2[i - 1], anchor2, -anchor2, axis, axis);
+	}
 
 	return ret;
 }
@@ -83,11 +98,11 @@ update_status ModuleSceneIntro::Update(float dt)
 		s_snake[i].Render();
 	}
 
-	//for(int i = 0; i < MAX_SNAKE; ++i)
-	//{
-	//	pb_snake2[i]->GetTransform(&(s_snake2[i].transform));
-	//	s_snake2[i].Render();
-	//}
+	for(int i = 0; i < MAX_SNAKE; ++i)
+	{
+		pb_snake2[i]->GetTransform(&(s_snake2[i].transform));
+		s_snake2[i].Render();
+	}
 
 	return UPDATE_CONTINUE;
 }
